@@ -5,6 +5,7 @@
 ### Author: Kolton Rogers
 
 A map showing real-time weatehr radar and alerts from the National Weather Serivce
-<URL>
+<https://koltonrogers15-hub.github.io/LeafletWebMapDemo/weather/>
 
 A map showing earthquake data.
+<https://koltonrogers15-hub.github.io/LeafletWebMapDemo/earthquake/>
