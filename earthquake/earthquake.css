@@ -1,0 +1,11 @@
+body {
+    padding: 0;
+    margin: 0;
+   }
+
+      html, body, #eqmap {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+   
