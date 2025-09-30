@@ -1,11 +1,60 @@
 var map = L.map('weathermap').setView([38, -95], 4);
 
 var basemap = L.esri.basemapLayer('Topographic').addTo(map);
+
 // 2) Make two overlay groups
 var weatherLayers = L.layerGroup().addTo(map); // default ON to match your original weather page
 var quakesLayer   = L.layerGroup();            // off until user clicks "Quakes"
 
-// 3) === WEATHER (your original, just add to weatherLayers instead of map) ===
+function getColor(m) {
+  return m >= 6 ? '#800026' :  // deep red
+         m >= 5 ? '#bd0026' :  // red
+         m >= 4 ? '#f03b20' :  // orange-red
+         m >= 3 ? '#fd8d3c' :  // orange
+         m >= 2 ? '#fecc5c' :  // yellow
+         m >= 1 ? '#c2e699' :  // light green
+                  '#78c679';   // green
+}
+
+// YOUR radius rule
+function styleForMag(m) {
+  return {
+    radius: Math.max(2, m * 3.5),
+    fillColor: getColor(m),
+    color: '#000',
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.85
+  };
+}
+
+// Legend (top-right)
+const legend = L.control({ position: 'topright' });
+
+legend.onAdd = function () {
+  const div = L.DomUtil.create('div', 'legend');
+  const grades = [0, 1, 2, 3, 4, 5, 6];
+  const labels = ['0–1', '1–2', '2–3', '3–4', '4–5', '5–6', '6+'];
+
+  div.innerHTML += '<h4>Magnitude</h4>';
+  for (let i = 0; i < grades.length; i++) {
+    div.innerHTML +=
+      `<i style="background:${getColor(grades[i] + 0.001)}"></i> ${labels[i]}<br>`;
+  }
+  L.DomEvent.disableClickPropagation(div);
+  return div;
+};
+
+// Show legend ONLY when quakesLayer is on the map
+let legendOn = false;
+function refreshLegend() {
+  if (map.hasLayer(quakesLayer)) {
+    if (!legendOn) { legend.addTo(map); legendOn = true; }
+  } else {
+    if (legendOn) { map.removeControl(legend); legendOn = false; }
+  }
+}
+refreshLegend(); // ensure hidden at load
 
 // Radar WMS
 var radarUrl = 'https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi';
@@ -41,14 +90,15 @@ $.getJSON(quakesUrl, function (geojson) {
       var mag = (feature && feature.properties && feature.properties.mag != null)
         ? Number(feature.properties.mag) : 0;
 
-        const color =
-  mag >= 6 ? '#800026' :  // very strong → deep red
-  mag >= 5 ? '#bd0026' :  // strong → red
-  mag >= 4 ? '#f03b20' :  // moderate → orange-red
-  mag >= 3 ? '#fd8d3c' :  // orange
-  mag >= 2 ? '#fecc5c' :  // yellow
-  mag >= 1 ? '#c2e699' :  // light green
-             '#78c679';   // green
+      const color =
+        mag >= 6 ? '#800026' :  // very strong → deep red
+        mag >= 5 ? '#bd0026' :  // strong → red
+        mag >= 4 ? '#f03b20' :  // moderate → orange-red
+        mag >= 3 ? '#fd8d3c' :  // orange
+        mag >= 2 ? '#fecc5c' :  // yellow
+        mag >= 1 ? '#c2e699' :  // light green
+                   '#78c679';   // green
+
       const radius = Math.max(2, mag * 3.5);
 
       return L.circleMarker(latlng, {
@@ -91,6 +141,7 @@ document.getElementById('btnWeather').onclick = function () {
   // button styles
   this.style.background = '#fff';
   document.getElementById('btnQuakes').style.background = '#f5f5f5';
+  refreshLegend(); // update legend visibility
 };
 
 document.getElementById('btnQuakes').onclick = function () {
@@ -99,4 +150,5 @@ document.getElementById('btnQuakes').onclick = function () {
   // button styles
   this.style.background = '#fff';
   document.getElementById('btnWeather').style.background = '#f5f5f5';
+  refreshLegend(); // update legend visibility
 };

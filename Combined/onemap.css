@@ -6,3 +6,22 @@ body {
     height: 100%;
     width: 100%;
    }
+
+.legend { 
+  background:#fff; 
+  padding:12px 15px;          
+  border-radius:4.5px;        
+  box-shadow:0 0 11.25px rgba(0,0,0,.2); 
+  line-height:27px;            
+  color:#333;
+}
+.legend h4 { 
+  margin:0 0 9px;              
+  font: 21px/24px Arial, sans-serif; 
+}
+.legend i { 
+  width:21px; height:21px;     
+  float:left; 
+  margin-right:12px;           
+  opacity:.85;
+}
