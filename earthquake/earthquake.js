@@ -14,14 +14,15 @@ $.getJSON(quakesUrl, function (geojson) {
       var mag = (feature && feature.properties && feature.properties.mag != null)
         ? Number(feature.properties.mag) : 0;
 
-      const color =
-        mag >= 5 ? '#d73027' :
-        mag >= 4 ? '#fc8d59' :
-        mag >= 3 ? '#fee08b' :
-        mag >= 2 ? '#91cf60' :
-                   '#1a9850';
-
-      const radius = Math.max(2, mag * 2.5);
+   const color =
+  mag >= 6 ? '#800026' :  // very strong → deep red
+  mag >= 5 ? '#bd0026' :  // strong → red
+  mag >= 4 ? '#f03b20' :  // moderate → orange-red
+  mag >= 3 ? '#fd8d3c' :  // orange
+  mag >= 2 ? '#fecc5c' :  // yellow
+  mag >= 1 ? '#c2e699' :  // light green
+             '#78c679';   // green
+      const radius = Math.max(2, mag * 3.5);
 
       return L.circleMarker(latlng, {
         radius: radius,
@@ -36,7 +37,7 @@ $.getJSON(quakesUrl, function (geojson) {
       const magStr = (p.mag != null) ? Number(p.mag).toFixed(1) : 'N/A';
       const place = p.place || 'Unknown location';
       const time = p.time ? new Date(p.time).toLocaleString() : 'Unknown time';
-      layer.bindPopup('<strong>M ' + magStr + '</strong><br>' + place + '<br>' + time);
+      layer.bindPopup('<strong>Mw ' + magStr + '</strong><br>' + place + '<br>' + time);
     }
   }).addTo(map); // <— chain directly; no undefined variable
 }).fail(function (jqxhr, textStatus, error) {
